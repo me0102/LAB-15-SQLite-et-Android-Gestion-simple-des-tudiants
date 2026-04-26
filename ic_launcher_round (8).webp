@@ -1,0 +1,67 @@
+package com.example.gestionetudiants.repository;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.example.gestionetudiants.database.StudentDbHelper;
+import com.example.gestionetudiants.model.Etudiant;
+
+public class EtudiantRepository {
+
+    private final StudentDbHelper dbHelper;
+
+    public EtudiantRepository(Context context) {
+        this.dbHelper = new StudentDbHelper(context);
+    }
+
+    public void insertEtudiant(Etudiant e) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nom", e.getNom());
+        values.put("prenom", e.getPrenom());
+        db.insert(StudentDbHelper.TABLE_ETUDIANT, null, values);
+        db.close();
+    }
+
+    public Etudiant getEtudiantById(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + StudentDbHelper.TABLE_ETUDIANT + " WHERE id = ?", new String[]{String.valueOf(id)});
+
+        Etudiant e = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            e = new Etudiant();
+            e.setId(cursor.getInt(0));
+            e.setNom(cursor.getString(1));
+            e.setPrenom(cursor.getString(2));
+            cursor.close();
+        }
+        db.close();
+        return e;
+    }
+
+    public void deleteEtudiant(int id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(StudentDbHelper.TABLE_ETUDIANT, "id = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+    // Méthode pour récupérer tous les étudiants (Nécessaire pour le test Logcat)
+    public java.util.List<Etudiant> getAllEtudiants() {
+        java.util.List<Etudiant> liste = new java.util.ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        android.database.Cursor cursor = db.rawQuery("SELECT * FROM " + StudentDbHelper.TABLE_ETUDIANT, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Etudiant e = new Etudiant();
+                e.setId(cursor.getInt(0));
+                e.setNom(cursor.getString(1));
+                e.setPrenom(cursor.getString(2));
+                liste.add(e);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return liste;
+    }
+}

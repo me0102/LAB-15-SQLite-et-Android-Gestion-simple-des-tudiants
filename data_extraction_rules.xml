@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/et_nom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nom de l'étudiant" />
+
+    <EditText
+        android:id="@+id/et_prenom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Prénom de l'étudiant" />
+
+    <Button
+        android:id="@+id/btn_ajouter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ajouter l'étudiant"
+        android:layout_marginBottom="30dp"/>
+
+    <EditText
+        android:id="@+id/et_search_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="ID de l'étudiant (ex: 1)"
+        android:inputType="number" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btn_chercher"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Chercher" />
+
+        <Button
+            android:id="@+id/btn_supprimer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Supprimer" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_resultat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#FF5722"/>
+    <Button
+        android:id="@+id/btn_afficher_tous"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Afficher tous les étudiants"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"/>
+
+    <ListView
+        android:id="@+id/list_etudiants"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"/>
+</LinearLayout>

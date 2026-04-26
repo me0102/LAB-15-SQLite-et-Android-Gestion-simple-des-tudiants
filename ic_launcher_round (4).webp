@@ -1,0 +1,135 @@
+package com.example.gestionetudiants;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.gestionetudiants.model.Etudiant;
+import com.example.gestionetudiants.repository.EtudiantRepository;
+
+public class MainActivity extends AppCompatActivity {
+    private android.widget.ListView listViewEtudiants;
+    private Button btnAfficherTous;
+    private EditText etNom, etPrenom, etSearchId;
+    private TextView tvResultat;
+    private EtudiantRepository repository;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        repository = new EtudiantRepository(this);
+        initViews();
+        setupListeners();
+
+        /* --- LE TEST LOGCAT EST DÉSORMAIS EN COMMENTAIRE ---
+        android.util.Log.d("APP_TEST", "Insertion des étudiants...");
+        repository.insertEtudiant(new Etudiant("ALAMI", "ALI"));
+        repository.insertEtudiant(new Etudiant("RAMI", "AMAL"));
+        repository.insertEtudiant(new Etudiant("SAFI", "MHMED"));
+        repository.insertEtudiant(new Etudiant("SELAOUI", "REDA"));
+        repository.insertEtudiant(new Etudiant("ALAMI", "WAFA"));
+
+        android.util.Log.d("APP_TEST", "--- Avant suppression ---");
+        for (Etudiant e : repository.getAllEtudiants()) {
+            android.util.Log.d("APP_TEST", "ID " + e.getId() + " : " + e.getNom() + " " + e.getPrenom());
+        }
+
+        repository.deleteEtudiant(3);
+
+        android.util.Log.d("APP_TEST", "--- Après suppression de l'ID 3 ---");
+        for (Etudiant e : repository.getAllEtudiants()) {
+            android.util.Log.d("APP_TEST", "ID " + e.getId() + " : " + e.getNom() + " " + e.getPrenom());
+        }
+        --- FIN DU TEST LOGCAT --- */
+
+
+    }
+
+    private void initViews() {
+        etNom = findViewById(R.id.et_nom);
+        etPrenom = findViewById(R.id.et_prenom);
+        etSearchId = findViewById(R.id.et_search_id);
+        tvResultat = findViewById(R.id.tv_resultat);
+        btnAfficherTous = findViewById(R.id.btn_afficher_tous);
+        listViewEtudiants = findViewById(R.id.list_etudiants);
+    }
+
+    private void setupListeners() {
+        // Bouton Ajouter
+        findViewById(R.id.btn_ajouter).setOnClickListener(v -> {
+            String nom = etNom.getText().toString().trim();
+            String prenom = etPrenom.getText().toString().trim();
+
+            if (!nom.isEmpty() && !prenom.isEmpty()) {
+                repository.insertEtudiant(new Etudiant(nom, prenom));
+                Toast.makeText(this, "Étudiant enregistré", Toast.LENGTH_SHORT).show();
+                etNom.setText("");
+                etPrenom.setText("");
+                tvResultat.setText("");
+
+                // Mise à jour automatique de la liste
+                btnAfficherTous.performClick();
+            } else {
+                Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Bouton Afficher Tous
+        btnAfficherTous.setOnClickListener(v -> {
+            java.util.List<Etudiant> liste = repository.getAllEtudiants();
+
+            if (liste.isEmpty()) {
+                // Si la liste est vide, on vide la ListView pour ne rien afficher
+                listViewEtudiants.setAdapter(null);
+            } else {
+                android.widget.ArrayAdapter<Etudiant> adapter = new android.widget.ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_list_item_1,
+                        liste
+                );
+                listViewEtudiants.setAdapter(adapter);
+            }
+        }); // <-- C'est ici qu'il manquait la fermeture !
+
+        // Bouton Chercher
+        findViewById(R.id.btn_chercher).setOnClickListener(v -> {
+            String idStr = etSearchId.getText().toString().trim();
+            if (!idStr.isEmpty()) {
+                Etudiant e = repository.getEtudiantById(Integer.parseInt(idStr));
+                if (e != null) {
+                    tvResultat.setText("Résultat : " + e.toString());
+                } else {
+                    tvResultat.setText("Aucun étudiant trouvé avec cet ID.");
+                }
+            } else {
+                Toast.makeText(this, "Veuillez saisir un ID", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Bouton Supprimer
+        findViewById(R.id.btn_supprimer).setOnClickListener(v -> {
+            String idStr = etSearchId.getText().toString().trim();
+            if (!idStr.isEmpty()) {
+                int id = Integer.parseInt(idStr);
+                if(repository.getEtudiantById(id) != null) {
+                    repository.deleteEtudiant(id);
+                    Toast.makeText(this, "Étudiant supprimé", Toast.LENGTH_SHORT).show();
+                    tvResultat.setText("");
+                    etSearchId.setText("");
+
+                    // Mise à jour automatique de la liste
+                    btnAfficherTous.performClick();
+                } else {
+                    Toast.makeText(this, "Impossible de supprimer : ID introuvable", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Veuillez saisir un ID à supprimer", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}
